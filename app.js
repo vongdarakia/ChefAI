@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 	});
 });
 
-app.get('/Echo', (req, res) => {
+app.post('/echo', (req, res) => {
 	// res.status(200).send('Hello, Akia');
 	return res.json({
 		speech: "something",
