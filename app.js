@@ -13,6 +13,16 @@ app.get('/', (req, res) => {
 	});
 });
 
+app.get('/Echo', (req, res) => {
+	// res.status(200).send('Hello, Akia');
+	return res.json({
+		speech: "something",
+		displayText: "Echo, Akia",
+		source: 'Chef AI'
+
+	});
+});
+
 if (module === require.main) {
 	const server = app.listen(process.env.PORT || 8081, () => {
 		const port = server.address().port;
