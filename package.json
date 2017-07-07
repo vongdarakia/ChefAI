@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/vongdarakia/ChefAI/issues"
   },
-  "homepage": "https://github.com/vongdarakia/ChefAI#readme"
+  "homepage": "https://github.com/vongdarakia/ChefAI#readme",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
 }
