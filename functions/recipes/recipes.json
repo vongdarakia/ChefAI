@@ -1,0 +1,99 @@
+[{
+	"recipe_name" : "Spaghetti Squash",
+	"ingredients" : [
+		{
+			"name" : "small spaghetti squash",
+			"weight_unit" : "lbs",
+			"weight_qty" : "2",
+			"unit" : null,
+			"unit_qty" : "1"
+		},
+		{
+			"name" : "extra-virgin olive oil",
+			"unit" : "tbsp",
+			"unit_qty" : "3"
+		},
+		{
+			"name" : "kosher salt",
+			"unit" : "to taste",
+			"unit_qty" : "1"
+		},
+		{
+			"name" : "freshly ground salt",
+			"unit" : "to taste",
+			"unit_qty" : "1"
+		},
+		{
+			"name" : "hot Italian sausage links",
+			"weight_unit" : "lbs",
+			"weight_qty" : "1.5",
+			"unit" : "links",
+			"unit_qty" : "8"
+		},
+		{
+			"name" : "red bell pepper",
+			"unit" : null,
+			"unit_qty" : "1"
+		},
+		{
+			"name" : "medium onion",
+			"unit" : null,
+			"unit_qty" : "1"
+		},
+		{
+			"name" : "garlic",
+			"unit" : "clove",
+			"unit_qty" : "1 clove"
+		},
+		{
+			"name" : "fresh parsley",
+			"unit" : "cup",
+			"unit_qty" : "1/4"
+		},
+		{
+			"name" : "freshly grated parmesan",
+			"unit" : "topping",
+			"unit_qty" : "1"
+		}
+	],
+	"instructions" : [
+		{
+			"instruction" :	"Halve squash lengthwise and scoop out the seeds",
+			"duration" : null
+		},
+		{
+			"instruction" : "In a large microwave-safe bowl, drizzle squash cut-side up with 1 tablesppon of olive oil and 1 tablespoon of water.",
+			"duration": null
+		},
+		{
+			"instruction" : "Season with salt and pepper.",
+			"duration" : null
+		},
+		{
+			"instruction" : "Cover tightly with plastic wrap and microwave until tender for about 20 minutes",
+			"duration" : "20 minutes"
+		},
+		{
+			"instruction" : "Heat the remaining 2 tablespoons of olive oik in a skillet over medium-high heat.",
+			"duration" : null
+		},
+		{
+			"instruction" : "Add the bell pepper, onion, and a teaspoon of salt and cook until softened - so about 5 minutes.",
+			"duration" : null
+		},
+		{
+			"instruction" : "Add the garlic and cook until the vegetables brown - so about 4 more minutes.",
+			"duration" : null
+		},
+		{
+			"instruction" : "Toss in the squash and parsely and season with salt and pepper.",
+			"duration" : null
+		},
+		{
+			"instruction" : "Serve with the sausages and sprinkle with parmesan",
+			"duration" : null
+		}
+	],
+	"servings" : "4"
+}
+]
