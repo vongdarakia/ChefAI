@@ -32,103 +32,220 @@ let state = {
 };
 
 const recipes = [{
-        "recipe_name" : "Spaghetti Squash",
-        "ingredients" : [
-        {
-          "name" : "small spaghetti squash",
-          "weight_unit" : "lbs",
-          "weight_qty" : "2",
-          "unit" : null,
-          "unit_qty" : "1"
-        },
-        {
-          "name" : "extra-virgin olive oil",
-          "unit" : "tbsp",
-          "unit_qty" : "3"
-        },
-        {
-          "name" : "kosher salt",
-          "unit" : "to taste",
-          "unit_qty" : "1"
-        },
-        {
-          "name" : "freshly ground salt",
-          "unit" : "to taste",
-          "unit_qty" : "1"
-        },
-        {
-          "name" : "hot Italian sausage links",
-          "weight_unit" : "lbs",
-          "weight_qty" : "1.5",
-          "unit" : "links",
-          "unit_qty" : "8"
-        },
-        {
-          "name" : "red bell pepper",
-          "unit" : null,
-          "unit_qty" : "1"
-        },
-        {
-          "name" : "medium onion",
-          "unit" : null,
-          "unit_qty" : "1"
-        },
-        {
-          "name" : "garlic",
-          "unit" : "clove",
-          "unit_qty" : "1 clove"
-        },
-        {
-          "name" : "fresh parsley",
-          "unit" : "cup",
-          "unit_qty" : "1/4"
-        },
-        {
-          "name" : "freshly grated parmesan",
-          "unit" : "topping",
-          "unit_qty" : "1"
-        }
-        ],
-        "instructions" : [
-        {
-          "instruction" : "Halve squash lengthwise and scoop out the seeds",
-          "duration" : null
-        },
-        {
-          "instruction" : "In a large microwave-safe bowl, drizzle squash cut-side up with 1 tablesppon of olive oil and 1 tablespoon of water.",
-          "duration": null
-        },
-        {
-          "instruction" : "Season with salt and pepper.",
-          "duration" : null
-        },
-        {
-          "instruction" : "Cover tightly with plastic wrap and microwave until tender for about 20 minutes",
-          "duration" : "20 minutes"
-        },
-        {
-          "instruction" : "Heat the remaining 2 tablespoons of olive oik in a skillet over medium-high heat.",
-          "duration" : null
-        },
-        {
-          "instruction" : "Add the bell pepper, onion, and a teaspoon of salt and cook until softened - so about 5 minutes.",
-          "duration" : null
-        },
-        {
-          "instruction" : "Add the garlic and cook until the vegetables brown - so about 4 more minutes.",
-          "duration" : null
-        },
-        {
-          "instruction" : "Toss in the squash and parsely and season with salt and pepper.",
-          "duration" : null
-        },
-        {
-          "instruction" : "Serve with the sausages and sprinkle with parmesan",
-          "duration" : null
-        }
-        ],
-        "servings" : "4"
-}];
+  "recipe_name" : "Spaghetti Squash",
+  "ingredients" : [
+    {
+      "name" : "small spaghetti squash",
+      "weight_unit" : "lbs",
+      "weight_qty" : "2",
+      "unit" : null,
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "extra-virgin olive oil",
+      "unit" : "tbsp",
+      "unit_qty" : "3"
+    },
+    {
+      "name" : "kosher salt",
+      "unit" : "to taste",
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "freshly ground salt",
+      "unit" : "to taste",
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "hot Italian sausage links",
+      "weight_unit" : "lbs",
+      "weight_qty" : "1.5",
+      "unit" : "links",
+      "unit_qty" : "8"
+    },
+    {
+      "name" : "red bell pepper",
+      "unit" : null,
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "medium onion",
+      "unit" : null,
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "garlic",
+      "unit" : "clove",
+      "unit_qty" : "1 clove"
+    },
+    {
+      "name" : "fresh parsley",
+      "unit" : "cup",
+      "unit_qty" : "1/4"
+    },
+    {
+      "name" : "freshly grated parmesan",
+      "unit" : "topping",
+      "unit_qty" : "1"
+    }
+  ],
+  "instructions" : [
+    {
+      "instruction" : "halve the squash lengthwise and scoop out the seeds",
+      "duration" : null
+    },
+    {
+      "instruction" : "in a large microwave-safe bowl, with the squash cut-side up, drizzle 1 tablesppon of olive oil and 1 tablespoon of water then season with salt and pepper",
+      "duration": null
+    },
+    {
+      "instruction" : "cover the bowl tightly with plastic wrap and microwave until tender for about 20 minutes",
+      "duration" : "20"
+    },
+    {
+      "instruction" : "heat the remaining 2 tablespoons of olive oil in a skillet over medium-high heat",
+      "duration" : null
+    },
+    {
+      "instruction" : "add the bell pepper, onion, and a teaspoon of salt and cook until softened - so about 5 minutes",
+      "duration" : null
+    },
+    {
+      "instruction" : "throw in the garlic and cook until the vegetables brown which will take about 4 more minutes",
+      "duration" : null
+    },
+    {
+      "instruction" : "toss in the squash, parsely and season with salt and pepper",
+      "duration" : null
+    },
+    {
+      "instruction" : "serve with the sausages and sprinkle with parmesan",
+      "duration" : null
+    }
+  ],
+  "servings" : "4"
+}
+{
+  "recipe_name" : "Spanish Flan",
+  "ingredients" : [
+    {
+      "name" : "white sugar",
+      "unit" : "cup",
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "eggs",
+      "unit" : null,
+      "unit_qty" : "3"
+    },
+    {
+      "name" : "sweetened condensed milk",
+      "weight_unit" : "oz",
+      "weight_qty" : "14",
+      "unit" : "can",
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "evaporated milk",
+      "weight_unit" : "fl oz",
+      "weight_qty" : "12",
+      "unit" : "can",
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "vanilla extract",
+      "unit" : "tbsp",
+      "unit_qty" : "1"
+    }
+  ],
+  "instructions" : [
+    {
+      "instruction" : "preheat your oven to 350 degrees",
+      "duration" : null
+    },
+    {
+      "instruction" : "melt the sugar until it's liquefied, in a medium saucepan over medium-low heat, and golden in color",
+      "duration" : null
+    },
+    {
+      "instruction" : "pour hot syrup into a 9 inch round glass baking dish, turning the dish to evenly coat the sides and bottom. Be careful because it's hot",
+      "duration" : null
+    },
+    {
+      "instruction" : "in a large bowl, beat in the following: eggs, condensed milk, evaporated milk and vanilla until it's smooth",
+      "duration" : null
+    },
+    {
+      "instruction" : "pour egg mixture into baking dish and cover with aluminum",
+      "duration" : null
+    },
+    {
+      "instruction" : "bake in the preheated oven for 60 minutes. You did remember to preheat it, right?",
+      "duration" : null
+    },
+    {
+      "instruction" : "when baking is complete, invert onto the serving plate when the flan is completely cool",
+      "duration" : null
+    }
+  ],
+  "servings" : "8"
+},
+{
+  "recipe_name" : "Mashed Potatoes",
+  "ingredients" : [
+    {
+      "name" : "russet potatoes",
+      "weight_unit" : "lbs",
+      "weight_qty" : "3",
+      "unit" : null,
+      "unit_qty" : "8"
+    },
+    {
+      "name" : "salt",
+      "unit" : "tsp",
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "butter",
+      "unit" : "tbsp",
+      "unit_qty" : "2"
+    },
+    {
+      "name" : "pepper",
+      "unit" : "to taste",
+      "unit_qty" : "1"
+    },
+    {
+      "name" : "hot milk",
+      "unit" : "cup",
+      "unit_qty" : "1/4"
+    }
+  ],
+  "instructions" : [
+    {
+      "instruction" : "place potatoes in a large saucepan and add water to cover said potatoes, then throw in 3/4 tsp of the salt and bring to a boil",
+      "duration" : null
+    },
+    {
+      "instruction" : "make sure heat is set to medium-low, loosely cover the saucepan and gently boil for 15 minutes or until the potatoes are soft enough to pierce with a fork",
+      "duration" : "15"
+    },
+    {
+      "instruction" : "drain the potatoes then return to the sauce pan. Oh, you may want to shake the saucepan gently over low heat for a couple minutes to evaporate any excess moisture",
+      "duration" : null
+    },
+    {
+      "instruction" : "afterwards, mash the potatoes until it is lump-free and add the margarine, salt and pepper",
+      "duration" : null
+    },
+    {
+      "instruction" : "continue mashing, adding milk as you go until the potatoes are at your desired level of smooth and creaminess. Be careful not to add too much milk because no one likes soupy mashed potatoes",
+      "duration" : null
+    },
+  ],
+  "servings" : "10"
+}
+];
 
 // [START ChefAI]
 exports.chefAI = functions.https.onRequest((request, response) => {
