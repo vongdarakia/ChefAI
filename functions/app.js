@@ -23,6 +23,11 @@ const COLOR_ARGUMENT = 'color';
 const NUMBER_ARGUMENT = 'number';
 const INTENT_START_INSTRUCTION = 'recipe.start'
 const ACTION_NEXT_INSTRUCTION = 'instruction.next'
+const ACTION_REPEAT_INSTRUCTION = 'instruction.repeat'
+const ACTION_PREVIOUS_INSTRUCTION = 'instruction.previous'
+const ACTION_CONTINUE_INSTRUCTION = 'instruction.continue'
+const CONTEXT_INSTRUCTING_RECIPE = 'instructing-recipe';
+const CONTEXT_INSTRUCTIONS_COMPLETED = 'instructions-completed';
 
 let x = 1;
 let state = {
@@ -124,7 +129,7 @@ const recipes = [{
     }
   ],
   "servings" : "4"
-}
+},
 {
   "recipe_name" : "Spanish Flan",
   "ingredients" : [
@@ -268,7 +273,7 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     }
 
 
-    function next (app) {
+    function next(app) {
         if (!recipes[state.currRecipe]) {
             app.ask("Sorry, this recipe doesn't exist");
         }
@@ -280,14 +285,37 @@ exports.chefAI = functions.https.onRequest((request, response) => {
             app.ask("Lastly, " + instructions[state.currInstruction].instruction);
             state.currInstruction = 0;
         } else {
-            app.setContext("instructing-recipe");
+            app.setContext(CONTEXT_INSTRUCTING_RECIPE);
             app.ask(instructions[state.currInstruction].instruction);
         }
     }
 
+    function repeat(app) {
+        app.setContext(CONTEXT_INSTRUCTING_RECIPE);
+        app.ask(recipes[state.currRecipe].instructions[state.currInstruction].instruction);
+    }
+
+    function previous(app) {
+        app.setContext(CONTEXT_INSTRUCTING_RECIPE);
+        state.currInstruction--;
+        if (state.currInstruction < 0) {
+            state.currInstruction = 0;
+        } 
+        app.ask("The last recipe was, '" + recipes[state.currRecipe].instructions[state.currInstruction].instruction, "'");
+    }
+
+    function continueInstructions(app) {
+        app.setContext(CONTEXT_INSTRUCTING_RECIPE);
+        app.ask(recipes[state.currRecipe].instructions[state.currInstruction].instruction);
+    }
+
+    function selectRecipe(app) {
+        app.ask("Selecting recipe");
+    }
+
     function startInstruction(app) {
         state.currInstruction = 0;
-        app.setContext("instructing-recipe");
+        app.setContext(CONTEXT_INSTRUCTING_RECIPE);
         app.ask("Okay first step is " + recipes[state.currRecipe].instructions[state.currInstruction].instruction);
     }
 
@@ -295,6 +323,9 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     actionMap.set(NAME_ACTION, makeName);
     actionMap.set(INTENT_START_INSTRUCTION, startInstruction);
     actionMap.set(ACTION_NEXT_INSTRUCTION, next);
+    actionMap.set(ACTION_PREVIOUS_INSTRUCTION, previous);
+    actionMap.set(ACTION_CONTINUE_INSTRUCTION, continueInstructions);
+    actionMap.set(ACTION_REPEAT_INSTRUCTION, repeat);
     actionMap.set('test', test);
 
     app.handleRequest(actionMap);
