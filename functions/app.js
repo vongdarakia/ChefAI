@@ -21,11 +21,12 @@ const fs = require('fs');
 const NAME_ACTION = 'make_name';
 const COLOR_ARGUMENT = 'color';
 const NUMBER_ARGUMENT = 'number';
-const INTENT_START_INSTRUCTION = 'recipe.start'
-const ACTION_NEXT_INSTRUCTION = 'instruction.next'
-const ACTION_REPEAT_INSTRUCTION = 'instruction.repeat'
-const ACTION_PREVIOUS_INSTRUCTION = 'instruction.previous'
-const ACTION_CONTINUE_INSTRUCTION = 'instruction.continue'
+const INTENT_START_INSTRUCTION = 'recipe.start';
+const ACTION_NEXT_INSTRUCTION = 'instruction.next';
+const ACTION_REPEAT_INSTRUCTION = 'instruction.repeat';
+const ACTION_PREVIOUS_INSTRUCTION = 'instruction.previous';
+const ACTION_CONTINUE_INSTRUCTION = 'instruction.continue';
+const ACTION_GET_INGREDIENT = 'instruction.getIngredient';
 const CONTEXT_INSTRUCTING_RECIPE = 'instructing-recipe';
 const CONTEXT_INSTRUCTIONS_COMPLETED = 'instructions-completed';
 
@@ -57,7 +58,7 @@ const recipes = [{
       "unit_qty" : "1"
     },
     {
-      "name" : "freshly ground salt",
+      "name" : "freshly ground pepper",
       "unit" : "to taste",
       "unit_qty" : "1"
     },
@@ -324,6 +325,28 @@ exports.chefAI = functions.https.onRequest((request, response) => {
         app.ask("Okay first step is " + recipes[state.currRecipe].instructions[state.currInstruction].instruction);
     }
 
+    function getIngredient(app) {
+        let ingredient = app.getArgument("ingredient");
+        let ingredients = recipes[state.currRecipe].ingredients;
+
+        app.setContext(CONTEXT_INSTRUCTING_RECIPE);
+        if (!ingredient) {
+            for (var i = ingredients.length - 1; i >= 0; i--) {
+                if (ingredients[i].name.indexOf(ingredient) >= 0) {
+                    if (ingredients[i].unit === null) {
+                        app.ask(ingredients[i].unit_qty + " " + ingredients[i].name);
+                        return;
+                    }
+                    app.ask(ingredients[i].unit_qty + " " + ingredients[i].unit + " of " + ingredients[i].name);
+                    return;
+                }
+            }
+            app.ask(ingredient + " is not in the list of recipes.");
+        }
+        else
+            app.ask(ingredient + "?")
+    }
+
     let actionMap = new Map();
     actionMap.set(NAME_ACTION, makeName);
     actionMap.set(INTENT_START_INSTRUCTION, startInstruction);
@@ -331,6 +354,7 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     actionMap.set(ACTION_PREVIOUS_INSTRUCTION, previous);
     actionMap.set(ACTION_CONTINUE_INSTRUCTION, continueInstructions);
     actionMap.set(ACTION_REPEAT_INSTRUCTION, repeat);
+    actionMap.set(ACTION_GET_INGREDIENT, getIngredient);
     actionMap.set('test', test);
 
     app.handleRequest(actionMap);
