@@ -1,0 +1,32 @@
+M: "Okay Google, talk to Cooking Helper"
+ ~: What do you want to eat?
+
+ M: "I don't know"
+ ~: "Maybe 'this'?"
+
+ M: "No, what else do you have?"
+ ~: "We can cook " + recipe_name + " or " + recipe_name + "what do you think?"
+
+ M: "Let's go with the Flan"
+ ~: "Okay, here's a list of ingredients you'll need" + {iterate} ingredient list + "do you have everything?"
+
+ M: "Yeah, I have it all, but these are my last eggs"
+ ~: "That's fine I'll place an order for " + ingredients.ingredient + ". Okay, ready to start?"
+
+ M: "Let's get started!"
+ ~: [instruction] "preheat your oven to 350 degrees" + "Let me know when you're ready for the next step"
+
+ M: "What's next?"
+ ~: [instruction] "melt the sugar until it's liquefied, in a medium saucepan over medium-low heat, and golden in color" + "Let me know when you're ready to proceed"
+
+M: "I forgot how much sugar we need. How much do we need?"
+~: "We need " + ingredients.ingredient.unit_qty + " of " + ingredients.ingredient.name
+
+ M: "Thanks, what's next"
+ ~: [instructions] "pour hot syrup into a 9 inch round glass baking dish, turning the dish to evenly coat the sides and bottom. Be careful because it's hot" + "Let me know when you're ready"
+
+ M: "Can we go back a step?"
+ ~: "Sure" + [instruction] "melt the sugar until it's liquefied, in a medium saucepan over medium-low heat, and golden in color" + "Let me know when you're ready to proceed"
+
+ M: "Show me what it looks like"
+ ~: "This is what you want it to look like" + {display} melted_sugar.jpg + "Let me know when you're ready"

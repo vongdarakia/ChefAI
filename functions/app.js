@@ -193,7 +193,10 @@ const recipes = [{
       "duration" : null
     }
   ],
-  "servings" : "8"
+  "servings" : "8",
+  "imgs" : {
+
+    }
 },
 {
   "recipe_name" : "Mashed Potatoes",
