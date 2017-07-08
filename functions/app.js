@@ -195,7 +195,9 @@ const recipes = [{
   ],
   "servings" : "8",
   "imgs" : {
-
+      "melted_sugar" : "http://ethnicspoon.com/wp-content/uploads/2013/10/flan-sugar-melted.jpg",
+      "egg_mixture" : "https://d1alt1wkdk73qo.cloudfront.net/images/guide/ec5b5eae760548f2968717e3d0837847/600x540_ac.jpg",
+      "oven_flan" : "http://3.bp.blogspot.com/-yG519YCfGnM/TjFI2gZRxtI/AAAAAAAABJI/U7RBYub7my4/s1600/DSC05243.JPG"
     }
 },
 {
