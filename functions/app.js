@@ -27,13 +27,14 @@ const ACTION_REPEAT_INSTRUCTION = 'instruction.repeat';
 const ACTION_PREVIOUS_INSTRUCTION = 'instruction.previous';
 const ACTION_CONTINUE_INSTRUCTION = 'instruction.continue';
 const ACTION_GET_INGREDIENT = 'instruction.getIngredient';
+const ACTION_GET_IMAGE = 'ingredient.getImage';
 const CONTEXT_INSTRUCTING_RECIPE = 'instructing-recipe';
 const CONTEXT_INSTRUCTIONS_COMPLETED = 'instructions-completed';
 
 let x = 1;
 let state = {
     currInstruction: 0,
-    currRecipe: 0,
+    currRecipe: 1,
     timeStarted: null
 };
 
@@ -163,43 +164,52 @@ const recipes = [{
       "unit" : "tbsp",
       "unit_qty" : "1"
     }
-  ],
-  "instructions" : [
-    {
-      "instruction" : "preheat your oven to 350 degrees",
-      "duration" : null
-    },
-    {
-      "instruction" : "melt the sugar until it's liquefied, in a medium saucepan over medium-low heat, and golden in color",
-      "duration" : null
-    },
-    {
-      "instruction" : "pour hot syrup into a 9 inch round glass baking dish, turning the dish to evenly coat the sides and bottom. Be careful because it's hot",
-      "duration" : null
-    },
-    {
-      "instruction" : "in a large bowl, beat in the following: eggs, condensed milk, evaporated milk and vanilla until it's smooth",
-      "duration" : null
-    },
-    {
-      "instruction" : "pour egg mixture into baking dish and cover with aluminum",
-      "duration" : null
-    },
-    {
-      "instruction" : "bake in the preheated oven for 60 minutes. You did remember to preheat it, right?",
-      "duration" : null
-    },
-    {
-      "instruction" : "when baking is complete, invert onto the serving plate when the flan is completely cool",
-      "duration" : null
-    }
-  ],
-  "servings" : "8",
-  "imgs" : {
-      "melted_sugar" : "http://ethnicspoon.com/wp-content/uploads/2013/10/flan-sugar-melted.jpg",
-      "egg_mixture" : "https://d1alt1wkdk73qo.cloudfront.net/images/guide/ec5b5eae760548f2968717e3d0837847/600x540_ac.jpg",
-      "oven_flan" : "http://3.bp.blogspot.com/-yG519YCfGnM/TjFI2gZRxtI/AAAAAAAABJI/U7RBYub7my4/s1600/DSC05243.JPG"
-    }
+    ],
+    "instructions" : [
+        {
+          "instruction" : "preheat your oven to 350 degrees",
+          "duration" : null
+        },
+        {
+          "instruction" : "melt the sugar until it's liquefied, in a medium saucepan over medium-low heat, and golden in color",
+          "duration" : null
+        },
+        {
+          "instruction" : "pour hot syrup into a 9 inch round glass baking dish, turning the dish to evenly coat the sides and bottom. Be careful because it's hot",
+          "duration" : null
+        },
+        {
+          "instruction" : "in a large bowl, beat in the following: eggs, condensed milk, evaporated milk and vanilla until it's smooth",
+          "duration" : null
+        },
+        {
+          "instruction" : "pour egg mixture into baking dish and cover with aluminum",
+          "duration" : null
+        },
+        {
+          "instruction" : "bake in the preheated oven for 60 minutes. You did remember to preheat it, right?",
+          "duration" : null
+        },
+        {
+          "instruction" : "when baking is complete, invert onto the serving plate when the flan is completely cool",
+          "duration" : null
+        }
+    ],
+    "servings" : "8",
+    "imgs" : [
+        {
+            "name": "melted sugar",
+            "url": "http://ethnicspoon.com/wp-content/uploads/2013/10/flan-sugar-melted.jpg"
+        },
+        {
+            "name": "egg mixture",
+            "url": "https://d1alt1wkdk73qo.cloudfront.net/images/guide/ec5b5eae760548f2968717e3d0837847/600x540_ac.jpg"
+        },
+        {
+            "name": "oven flan",
+            "url": "http://3.bp.blogspot.com/-yG519YCfGnM/TjFI2gZRxtI/AAAAAAAABJI/U7RBYub7my4/s1600/DSC05243.JPG"
+        }
+    ]
 },
 {
   "recipe_name" : "Mashed Potatoes",
@@ -330,11 +340,14 @@ exports.chefAI = functions.https.onRequest((request, response) => {
         let ingredients = recipes[state.currRecipe].ingredients;
 
         app.setContext(CONTEXT_INSTRUCTING_RECIPE);
-        if (!ingredient) {
+        if (ingredient) {
             for (var i = ingredients.length - 1; i >= 0; i--) {
                 if (ingredients[i].name.indexOf(ingredient) >= 0) {
                     if (ingredients[i].unit === null) {
                         app.ask(ingredients[i].unit_qty + " " + ingredients[i].name);
+                        return;
+                    } else if (ingredients[i].unit === "to taste") {
+                        app.ask(ingredients[i].name + " to taste");
                         return;
                     }
                     app.ask(ingredients[i].unit_qty + " " + ingredients[i].unit + " of " + ingredients[i].name);
@@ -344,7 +357,48 @@ exports.chefAI = functions.https.onRequest((request, response) => {
             app.ask(ingredient + " is not in the list of recipes.");
         }
         else
-            app.ask(ingredient + "?")
+            app.ask("?")
+    }
+
+    function getImage(app) {
+        // app.ask("");
+
+        if (app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT)) {
+            // app.ask(recipes[state.currRecipe].imgs[0].url + " " + recipes[state.currRecipe].imgs[0].name);
+            let basicCard = app.buildBasicCard("An Image");
+                // .setImage(recipes[state.currRecipe].imgs[0].url , recipes[state.currRecipe].imgs[0].name);
+
+            let richResponse = app.buildRichResponse()
+                // .addSimpleResponse(prompt)
+                .addBasicCard(basicCard);
+            ask(app, richResponse);
+            // app.ask(basicCard);
+        } else {
+            // app.ask("Can't display image");
+            // ask(app, "Can't display image");
+            let basicCard = app.buildBasicCard("An Image");
+                // .setImage(recipes[state.currRecipe].imgs[0].url , recipes[state.currRecipe].imgs[0].name);
+
+            let richResponse = app.buildRichResponse()
+                // .addSimpleResponse(prompt)
+                .addBasicCard(basicCard);
+            ask(app, richResponse);
+
+            // app.ask(recipes[state.currRecipe].imgs[0].url + " " + recipes[state.currRecipe].imgs[0].name);
+        }
+    }
+
+    function doPersist (persist) {
+        if (persist === undefined || persist) {
+          app.data.lastPrompt = app.data.printed;
+        }
+    }
+
+    function ask (app, prompt, persist) {
+        console.log('ask: ' + prompt);
+        doPersist(persist);
+        // app.ask(prompt, NO_INPUT_PROMPTS);
+        app.ask(prompt);
     }
 
     let actionMap = new Map();
@@ -355,6 +409,7 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     actionMap.set(ACTION_CONTINUE_INSTRUCTION, continueInstructions);
     actionMap.set(ACTION_REPEAT_INSTRUCTION, repeat);
     actionMap.set(ACTION_GET_INGREDIENT, getIngredient);
+    actionMap.set(ACTION_GET_IMAGE, getImage);
     actionMap.set('test', test);
 
     app.handleRequest(actionMap);
