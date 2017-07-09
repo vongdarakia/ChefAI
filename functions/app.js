@@ -18,9 +18,14 @@ const App = require('actions-on-google').ApiAiApp;
 const functions = require('firebase-functions');
 const fs = require('fs');
 
+const SSML_SPEAK_START = '<speak>';
+const SSML_SPEAK_END = '</speak>';
+const RANDOM_AUDIO = '<audio src="https://freesound.org/data/previews/83/83979_1246963-lq.mp3"/>';
+
 const NAME_ACTION = 'make_name';
 const COLOR_ARGUMENT = 'color';
 const NUMBER_ARGUMENT = 'number';
+const FOOD_ARGUMENT = 'food';
 const INTENT_START_INSTRUCTION = 'recipe.start';
 const ACTION_NEXT_INSTRUCTION = 'instruction.next';
 const ACTION_REPEAT_INSTRUCTION = 'instruction.repeat';
@@ -28,18 +33,25 @@ const ACTION_PREVIOUS_INSTRUCTION = 'instruction.previous';
 const ACTION_CONTINUE_INSTRUCTION = 'instruction.continue';
 const ACTION_GET_INGREDIENT = 'instruction.getIngredient';
 const ACTION_GET_IMAGE = 'ingredient.getImage';
+const ACTION_SUGGEST_RECIPE = 'recipe.suggestion';
+const ACTION_SUGGESTION_FOLLOWUP_YES = 'recipesuggestion.recipesuggestion-yes';
+const ACTION_SUGGESTION_FOLLOWUP_NO = 'recipesuggestion.recipesuggestion-no';
+const ACTION_SUGGESTION_FOLLOWUP_FOOD = 'recipesuggestion.recipesuggestion-food';
+const ACTION_SELECT_RECIPE = "select.recipe";
 const CONTEXT_INSTRUCTING_RECIPE = 'instructing-recipe';
 const CONTEXT_INSTRUCTIONS_COMPLETED = 'instructions-completed';
+const CONTEXT_SELECTING_RECIPE = "selecting-recipe";
+const CONTEXT_CHECKING_INGREDIENTS = "checking-ingredients";
 
 let x = 1;
 let state = {
     currInstruction: 0,
-    currRecipe: 1,
+    currRecipe: -1,
     timeStarted: null
 };
 
 const recipes = [{
-  "recipe_name" : "Spaghetti Squash",
+  "name" : "Spaghetti Squash",
   "ingredients" : [
     {
       "name" : "small spaghetti squash",
@@ -133,7 +145,7 @@ const recipes = [{
   "servings" : "4"
 },
 {
-  "recipe_name" : "Spanish Flan",
+  "name" : "Spanish Flan",
   "ingredients" : [
     {
       "name" : "white sugar",
@@ -172,7 +184,11 @@ const recipes = [{
         },
         {
           "instruction" : "melt the sugar until it's liquefied, in a medium saucepan over medium-low heat, and golden in color",
-          "duration" : null
+          "duration" : null,
+          "img": {
+                "name": "melted sugar",
+                "url": "http://ethnicspoon.com/wp-content/uploads/2013/10/flan-sugar-melted.jpg"
+            }
         },
         {
           "instruction" : "pour hot syrup into a 9 inch round glass baking dish, turning the dish to evenly coat the sides and bottom. Be careful because it's hot",
@@ -184,7 +200,11 @@ const recipes = [{
         },
         {
           "instruction" : "pour egg mixture into baking dish and cover with aluminum",
-          "duration" : null
+          "duration" : null,
+          "img": {
+                "name": "egg mixture",
+                "url": "https://d1alt1wkdk73qo.cloudfront.net/images/guide/ec5b5eae760548f2968717e3d0837847/600x540_ac.jpg"
+            }
         },
         {
           "instruction" : "bake in the preheated oven for 60 minutes. You did remember to preheat it, right?",
@@ -192,7 +212,11 @@ const recipes = [{
         },
         {
           "instruction" : "when baking is complete, invert onto the serving plate when the flan is completely cool",
-          "duration" : null
+          "duration" : null,
+          "img": {
+                "name": "oven flan",
+                "url": "http://3.bp.blogspot.com/-yG519YCfGnM/TjFI2gZRxtI/AAAAAAAABJI/U7RBYub7my4/s1600/DSC05243.JPG"
+            }
         }
     ],
     "servings" : "8",
@@ -212,7 +236,7 @@ const recipes = [{
     ]
 },
 {
-  "recipe_name" : "Mashed Potatoes",
+  "name" : "Mashed Potatoes",
   "ingredients" : [
     {
       "name" : "russet potatoes",
@@ -288,8 +312,14 @@ exports.chefAI = functions.https.onRequest((request, response) => {
         app.tell('Bonjour! ' + x++);
     }
 
+    function checkRecipe() {
+        if (state.currRecipe >= recipes.length || state.currRecipe < 0) {
+            state.currRecipe = 0;
+        }
+    }
 
     function next(app) {
+        checkRecipe();
         if (!recipes[state.currRecipe]) {
             app.ask("Sorry, this recipe doesn't exist");
         }
@@ -307,32 +337,70 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     }
 
     function repeat(app) {
+        checkRecipe();
         app.setContext(CONTEXT_INSTRUCTING_RECIPE);
         app.ask(recipes[state.currRecipe].instructions[state.currInstruction].instruction);
     }
 
     function previous(app) {
+        checkRecipe();
         app.setContext(CONTEXT_INSTRUCTING_RECIPE);
         state.currInstruction--;
         if (state.currInstruction < 0) {
             state.currInstruction = 0;
         } 
-        app.ask("The last recipe was, '" + recipes[state.currRecipe].instructions[state.currInstruction].instruction, "'");
+        app.ask("The last task was, '" + recipes[state.currRecipe].instructions[state.currInstruction].instruction, "'");
     }
 
     function continueInstructions(app) {
+        checkRecipe();
         app.setContext(CONTEXT_INSTRUCTING_RECIPE);
         app.ask(recipes[state.currRecipe].instructions[state.currInstruction].instruction);
     }
 
     function selectRecipe(app) {
-        app.ask("Selecting recipe");
+        let food = app.getArgument(FOOD_ARGUMENT);
+
+        if (food) {
+            let exists = false;
+            for (var i = recipes.length - 1; i >= 0; i--) {
+                if (recipes[i].name.toLowerCase().indexOf(food.toLowerCase()) >= 0) {
+                    state.currRecipe = i;
+                    exists = true;
+                    break ;
+                }
+            }
+            if (exists) {
+                // CHECK INGREDIENT!
+                checkIngredients(app);
+                // startInstruction(app);
+            } else {
+                app.setContext(CONTEXT_SELECTING_RECIPE);
+                let msg = "That recipe doesn't exist at the moment. Here are some of your favorite recipes: ";
+                for (var i = recipes.length - 1; i >= 0; i--) {
+                    msg += recipes[i].name + ". ";
+                }
+                app.ask(msg);
+            }
+            
+        } else {
+            app.ask("No food selected");
+        }
     }
 
     function startInstruction(app) {
         state.currInstruction = 0;
         app.setContext(CONTEXT_INSTRUCTING_RECIPE);
         app.ask("Okay first step is " + recipes[state.currRecipe].instructions[state.currInstruction].instruction);
+    }
+
+    function getIngredientFormat(ingredient) {
+        if (ingredient.unit === null) {
+            return (ingredient.unit_qty + " " + ingredient.name);
+        } else if (ingredient.unit === "to taste") {
+            return (ingredient.name + " to taste");
+        }
+        return (ingredient.unit_qty + " " + ingredient.unit + " of " + ingredient.name);
     }
 
     function getIngredient(app) {
@@ -342,15 +410,8 @@ exports.chefAI = functions.https.onRequest((request, response) => {
         app.setContext(CONTEXT_INSTRUCTING_RECIPE);
         if (ingredient) {
             for (var i = ingredients.length - 1; i >= 0; i--) {
-                if (ingredients[i].name.indexOf(ingredient) >= 0) {
-                    if (ingredients[i].unit === null) {
-                        app.ask(ingredients[i].unit_qty + " " + ingredients[i].name);
-                        return;
-                    } else if (ingredients[i].unit === "to taste") {
-                        app.ask(ingredients[i].name + " to taste");
-                        return;
-                    }
-                    app.ask(ingredients[i].unit_qty + " " + ingredients[i].unit + " of " + ingredients[i].name);
+                if (ingredients[i].name.toLowerCase().indexOf(ingredient.toLowerCase()) >= 0) {
+                    app.ask(getIngredientFormat(ingredients[i]));
                     return;
                 }
             }
@@ -361,31 +422,71 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     }
 
     function getImage(app) {
-        // app.ask("");
+        checkRecipe();
+        let instruction = recipes[state.currRecipe].instructions[state.currInstruction];
+        app.setContext(CONTEXT_INSTRUCTING_RECIPE);
+        if (instruction.img) {
+            if (app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT)) {
+                let basicCard = app.buildBasicCard(recipes[state.currRecipe].imgs[0].name)
+                    .setImage(recipes[state.currRecipe].imgs[0].url , recipes[state.currRecipe].imgs[0].name);
 
-        if (app.hasSurfaceCapability(app.SurfaceCapabilities.SCREEN_OUTPUT)) {
-            // app.ask(recipes[state.currRecipe].imgs[0].url + " " + recipes[state.currRecipe].imgs[0].name);
-            let basicCard = app.buildBasicCard("An Image");
-                // .setImage(recipes[state.currRecipe].imgs[0].url , recipes[state.currRecipe].imgs[0].name);
-
-            let richResponse = app.buildRichResponse()
-                // .addSimpleResponse(prompt)
-                .addBasicCard(basicCard);
-            ask(app, richResponse);
-            // app.ask(basicCard);
+                let richResponse = app.buildRichResponse()
+                    .addSimpleResponse("Here you go")
+                    .addBasicCard(basicCard);
+                ask(app, richResponse);
+            } else {
+                app.ask("Sorry, images can't be displayed on this device.");
+            }
         } else {
-            // app.ask("Can't display image");
-            // ask(app, "Can't display image");
-            let basicCard = app.buildBasicCard("An Image");
-                // .setImage(recipes[state.currRecipe].imgs[0].url , recipes[state.currRecipe].imgs[0].name);
-
-            let richResponse = app.buildRichResponse()
-                // .addSimpleResponse(prompt)
-                .addBasicCard(basicCard);
-            ask(app, richResponse);
-
-            // app.ask(recipes[state.currRecipe].imgs[0].url + " " + recipes[state.currRecipe].imgs[0].name);
+            app.ask("Sorry, I don't have an image for that.");
         }
+    }
+
+    function suggestRecipe(app) {
+        state.currRecipe++;
+
+        let prompt = "Sorry, that was the last recipe. But the first one again is ";
+        app.setContext(CONTEXT_SELECTING_RECIPE);
+        if (state.currRecipe < recipes.length) {
+            prompt = getRandomPrompt(app, ["How about ", "Want to try ", "Maybe "])
+            + recipes[state.currRecipe].name + "?";
+        } else {
+            promp += recipes[state.currRecipe].name;
+        }
+        app.ask(prompt);
+    }
+
+    // function suggestionFollowupFood(app) {
+    //     let food = app.getArgument("food");
+
+
+    //     checkIngredients(app);
+    // }
+
+    function listRecipes() {
+        let msg = "Here are some of your favorite recipes: ";
+        app.setContext(CONTEXT_SELECTING_RECIPE);
+        for (var i = recipes.length - 1; i >= 0; i--) {
+            msg += recipes[i].name;
+            if (i > 0) {
+                msg += ", ";
+            }
+        }
+        app.ask(msg);
+    }
+
+    function checkIngredients(app) {
+        app.setContext(CONTEXT_CHECKING_INGREDIENTS);
+        let msg = "Okay, do you have all of these ingredients? ";
+        let ingredients = recipes[state.currRecipe].ingredients;
+        for (var i = ingredients.length - 1; i >= 0; i--) {
+            msg += getIngredientFormat(ingredients[i]);
+
+            if (i > 0) {
+                msg += ", \n";
+            }
+        }
+        app.ask(msg);
     }
 
     function doPersist (persist) {
@@ -401,6 +502,26 @@ exports.chefAI = functions.https.onRequest((request, response) => {
         app.ask(prompt);
     }
 
+    function getRandomPrompt (app, array) {
+        let lastPrompt = app.data.lastPrompt;
+        let prompt;
+        if (lastPrompt) {
+            for (let index in array) {
+                prompt = array[index];
+                if (prompt !== lastPrompt) {
+                    break;
+                }
+            }
+        } else {
+            prompt = array[Math.floor(Math.random() * (array.length))];
+        }
+        return prompt;
+    }
+
+    function testAudio(app) {
+        let prompt = SSML_SPEAK_START + RANDOM_AUDIO + "Chris's audio" + SSML_SPEAK_END;
+        app.ask(prompt);
+    }
     let actionMap = new Map();
     actionMap.set(NAME_ACTION, makeName);
     actionMap.set(INTENT_START_INSTRUCTION, startInstruction);
@@ -410,7 +531,14 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     actionMap.set(ACTION_REPEAT_INSTRUCTION, repeat);
     actionMap.set(ACTION_GET_INGREDIENT, getIngredient);
     actionMap.set(ACTION_GET_IMAGE, getImage);
+    actionMap.set(ACTION_SUGGEST_RECIPE, suggestRecipe);
+    actionMap.set(ACTION_SUGGESTION_FOLLOWUP_NO, listRecipes);
+    actionMap.set(ACTION_SUGGESTION_FOLLOWUP_YES, checkIngredients);
+    actionMap.set(ACTION_SUGGESTION_FOLLOWUP_FOOD, selectRecipe);
+    actionMap.set(ACTION_SELECT_RECIPE, selectRecipe);
+    actionMap.set('ingredients.check-followup-yes', startInstruction);
     actionMap.set('test', test);
+    actionMap.set('testAudio', testAudio);
 
     app.handleRequest(actionMap);
 });
