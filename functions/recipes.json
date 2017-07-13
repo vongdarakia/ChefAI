@@ -1,60 +1,61 @@
 [
   {
     "name" : "Spaghetti Squash",
+    "description": "Spaghetti squash — or vegetable spaghetti — is a group of cultivars of Cucurbita pepo subsp. pepo. The fruit ranges from ivory to yellow/orange in color. The orange varieties have a higher carotene content. Its center contains many large seeds",
     "ingredients" : [
       {
         "name" : "small spaghetti squash",
         "weight_unit" : "lbs",
-        "weight_qty" : "2",
+        "weight_qty" : 2,
         "unit" : null,
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "extra-virgin olive oil",
         "unit" : "tbsp",
-        "unit_qty" : "3"
+        "unit_qty" : 3
       },
       {
         "name" : "kosher salt",
         "unit" : "to taste",
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "freshly ground pepper",
         "unit" : "to taste",
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "hot Italian sausage links",
         "weight_unit" : "lbs",
-        "weight_qty" : "1.5",
+        "weight_qty" : 1.5,
         "unit" : "links",
-        "unit_qty" : "8"
+        "unit_qty" : 8
       },
       {
         "name" : "red bell pepper",
         "unit" : null,
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "medium onion",
         "unit" : null,
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "garlic",
         "unit" : "clove",
-        "unit_qty" : "1 clove"
+        "unit_qty" : 1
       },
       {
         "name" : "fresh parsley",
         "unit" : "cup",
-        "unit_qty" : "1/4"
+        "unit_qty" : 0.25
       },
       {
         "name" : "freshly grated parmesan",
         "unit" : "topping",
-        "unit_qty" : "1"
+        "unit_qty" : 1
       }
     ],
     "instructions" : [
@@ -68,7 +69,7 @@
       },
       {
         "instruction" : "cover the bowl tightly with plastic wrap and microwave until tender for about 20 minutes",
-        "duration" : "20"
+        "duration" : 20
       },
       {
         "instruction" : "heat the remaining 2 tablespoons of olive oil in a skillet over medium-high heat",
@@ -95,40 +96,41 @@
   },
   {
     "name" : "Spanish Flan",
+    "description": "Flan is a traditional Spanish/Hispanic dessert that can be dressed up any way from chocolate to traditional. This flan is simple, yet creamy and smooth.",
     "ingredients" : [
       {
         "name" : "white sugar",
         "unit" : "cup",
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "eggs",
         "unit" : null,
-        "unit_qty" : "3"
+        "unit_qty" : 3
       },
       {
         "name" : "sweetened condensed milk",
         "weight_unit" : "oz",
         "weight_qty" : "14",
         "unit" : "can",
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "evaporated milk",
         "weight_unit" : "fl oz",
         "weight_qty" : "12",
         "unit" : "can",
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "vanilla extract",
         "unit" : "tbsp",
-        "unit_qty" : "1"
+        "unit_qty" : 1
       }
       ],
       "instructions" : [
           {
-            "instruction" : "preheat your oven to 350 degrees",
+            "instruction" : "let me preheat the oven to 350 degrees for you",
             "duration" : null
           },
           {
@@ -156,7 +158,7 @@
               }
           },
           {
-            "instruction" : "bake in the preheated oven for 60 minutes. You did remember to preheat it, right?",
+            "instruction" : "the oven is ready, bake in the preheated oven for 60 minutes",
             "duration" : null
           },
           {
@@ -168,7 +170,7 @@
               }
           }
       ],
-      "servings" : "8",
+      "servings" : 8,
       "imgs" : [
           {
               "name": "melted sugar",
@@ -186,33 +188,34 @@
   },
   {
     "name" : "Mashed Potatoes",
+    "description": "Mashed potato or mashed potatoes, is a dish prepared by mashing boiled potatoes.",
     "ingredients" : [
       {
         "name" : "russet potatoes",
         "weight_unit" : "lbs",
-        "weight_qty" : "3",
+        "weight_qty" : 3,
         "unit" : null,
-        "unit_qty" : "8"
+        "unit_qty" : 8
       },
       {
         "name" : "salt",
         "unit" : "tsp",
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "butter",
         "unit" : "tbsp",
-        "unit_qty" : "2"
+        "unit_qty" : 2
       },
       {
         "name" : "pepper",
         "unit" : "to taste",
-        "unit_qty" : "1"
+        "unit_qty" : 1
       },
       {
         "name" : "hot milk",
         "unit" : "cup",
-        "unit_qty" : "1/4"
+        "unit_qty" : 0.25
       }
     ],
     "instructions" : [
@@ -222,7 +225,7 @@
       },
       {
         "instruction" : "make sure heat is set to medium-low, loosely cover the saucepan and gently boil for 15 minutes or until the potatoes are soft enough to pierce with a fork",
-        "duration" : "15"
+        "duration" : 15
       },
       {
         "instruction" : "drain the potatoes then return to the sauce pan. Oh, you may want to shake the saucepan gently over low heat for a couple minutes to evaporate any excess moisture",
@@ -237,6 +240,6 @@
         "duration" : null
       }
     ],
-    "servings" : "10"
+    "servings" : 10
   }
 ]

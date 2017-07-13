@@ -31,34 +31,64 @@ const ACTION_NEXT_INSTRUCTION = 'instruction.next';
 const ACTION_REPEAT_INSTRUCTION = 'instruction.repeat';
 const ACTION_PREVIOUS_INSTRUCTION = 'instruction.previous';
 const ACTION_CONTINUE_INSTRUCTION = 'instruction.continue';
-const ACTION_GET_INGREDIENT = 'instruction.getIngredient';
+const ACTION_COMPLETE_INSTRUCTION = 'instruction.complete';
+const ACTION_GET_INGREDIENT = 'instruction.get-ingredient';
 const ACTION_GET_IMAGE = 'ingredient.getImage';
 const ACTION_SUGGEST_RECIPE = 'recipe.suggestion';
-const ACTION_SUGGESTION_FOLLOWUP_YES = 'recipesuggestion.recipesuggestion-yes';
-const ACTION_SUGGESTION_FOLLOWUP_NO = 'recipesuggestion.recipesuggestion-no';
-const ACTION_SUGGESTION_FOLLOWUP_FOOD = 'recipesuggestion.recipesuggestion-food';
-const ACTION_SELECT_RECIPE = "select.recipe";
+const ACTION_BROAD_ADD_TO_SHOPPING_LIST = 'shopping-list.insert-broad';
+// const ACTION_SUGGESTION_FOLLOWUP_YES = 'recipesuggestion.recipesuggestion-yes';
+// const ACTION_SUGGESTION_FOLLOWUP_NO = 'recipesuggestion.recipesuggestion-no';
+// const ACTION_SUGGESTION_FOLLOWUP_FOOD = 'recipesuggestion.recipesuggestion-food';
+
+const ACTION_SUGGESTION_FOLLOWUP_YES = 'reciperequest.reciperequest-yes';
+const ACTION_SUGGESTION_FOLLOWUP_NO = 'reciperequest.reciperequest-no';
+const ACTION_SUGGESTION_FOLLOWUP_FOOD = 'reciperequest.reciperequest-food';
+const ACTION_ALL_INGREDIENTS_CONFIRMED = 'reciperequest.reciperequest-confirm-ingredients';
+
+const ACTION_SELECT_RECIPE = "recipe.request";
+const ACTION_VIEW_SHOPPING_LIST = "shopping-list.inquire";
+const ACTION_VIEW_RECIPES = "recipes.inquire";
+const ACTION_VIEW_FAVORITE_RECIPES = "favorites.inquire";
+const ACTION_VIEW_FRIDGE = "fridge.inquire";
+
+const ACTION_ADD_TO_SHOPPING_LIST = "shopping-list.insert";
+const ACTION_IS_IN_SHOPPING_LIST = "shopping-list.single-inquire";
+
+const ACTION_CHECK_INGREDIENTS = "ingredients.check";
 const CONTEXT_INSTRUCTING_RECIPE = 'instructing-recipe';
 const CONTEXT_INSTRUCTIONS_COMPLETED = 'instructions-completed';
 const CONTEXT_SELECTING_RECIPE = "selecting-recipe";
 const CONTEXT_CHECKING_INGREDIENTS = "checking-ingredients";
+const CONTEST_VIEWING_SHOPPING_LIST = 'viewing-shopping-list';
 
-let x = 1;
+const ACTION_DESCRIBE_RECIPE = 'recipe.describe';
+
+const recipes = require('./recipes.json');
+let fridgeInventory = require('./fridge-inventory.json');
+
 let initState = {
     currInstruction: 0,
     currRecipe: -1,
-    timeStarted: null
+    timeStarted: null,
+    shoppingList: []
 };
+
+for (var i = fridgeInventory.length - 1; i >= 0; i--) {
+    fridgeInventory[i].unit_qty *= 2;
+}
 
 let state = {
     currInstruction: 0,
     currRecipe: -1,
-    timeStarted: null
+    timeStarted: null,
+    shoppingList: ["eggs", "milk", "cheese", "butter"],
+    fridgeInventory: fridgeInventory
 };
 
-let states = {};
+// let states = {};
 
-const recipes = JSON.parse(require('fs').readFileSync('./recipes.json', 'utf8'));
+// const recipes = JSON.parse(require('fs').readFileSync('./recipes.json', 'utf8'));
+
 
 // const recipes = [
 //   {
@@ -334,23 +364,37 @@ exports.chefAI = functions.https.onRequest((request, response) => {
         if (!recipes[state.currRecipe]) {
             app.ask("Sorry, this recipe doesn't exist");
         }
+
         let instructions = recipes[state.currRecipe].instructions;
+        let num = "[" + (state.currInstruction + 1) + "/" + instructions.length + "] ";
+        if (state.currInstruction === instructions.length - 1) {
+            state.currInstruction = 0;
+            app.setContext("instructions-completed");
+            app.ask(getRandomPrompt(app, ["You're all done, silly! Don't forget to share your food with your mom.",
+            "That was the last one! Enjoy your meal!"
+            ]));
+            // app.ask(getRandomPrompt(app, ["Not bad! It's not that burnt this time!",
+            // "Looking good! Maybe your mom will approve of it this time!",
+            // "Nice! Enjoy your meal!",
+            // "Congrats! I wish I was human!"
+            // ]));
+            return;
+        }
+        app.setContext(CONTEXT_INSTRUCTING_RECIPE);
         state.currInstruction++;
 
         if (state.currInstruction === instructions.length - 1) {
-            app.setContext("instructions-completed");
-            app.ask("Lastly, " + instructions[state.currInstruction].instruction);
-            state.currInstruction = 0;
+            app.ask(num + "Lastly, " + instructions[state.currInstruction].instruction);
         } else {
-            app.setContext(CONTEXT_INSTRUCTING_RECIPE);
-            app.ask(instructions[state.currInstruction].instruction);
+            app.ask(num + instructions[state.currInstruction].instruction);
         }
     }
 
     function repeat(app) {
         checkRecipe();
         app.setContext(CONTEXT_INSTRUCTING_RECIPE);
-        app.ask(recipes[state.currRecipe].instructions[state.currInstruction].instruction);
+        let num = "[" + (state.currInstruction + 1) + "/" + instructions.length + "] ";
+        app.ask(num + recipes[state.currRecipe].instructions[state.currInstruction].instruction);
     }
 
     function previous(app) {
@@ -360,13 +404,24 @@ exports.chefAI = functions.https.onRequest((request, response) => {
         if (state.currInstruction < 0) {
             state.currInstruction = 0;
         } 
-        app.ask("The last task was, '" + recipes[state.currRecipe].instructions[state.currInstruction].instruction + "'");
+
+        let num = "[" + (state.currInstruction + 1) + "/" + instructions.length + "] ";
+
+        app.ask(num + recipes[state.currRecipe].instructions[state.currInstruction].instruction + "'");
     }
 
     function continueInstructions(app) {
         checkRecipe();
+        let instructions = recipes[state.currRecipe].instructions;
+
+        let num = "[" + (state.currInstruction + 1) + "/" + instructions.length + "] ";
         app.setContext(CONTEXT_INSTRUCTING_RECIPE);
-        app.ask(recipes[state.currRecipe].instructions[state.currInstruction].instruction);
+        if (state.currInstruction === instructions.length - 1) {
+            app.ask(num + "Lastly, " + instructions[state.currInstruction].instruction);
+        } else {
+            app.ask(num + instructions[state.currInstruction].instruction);
+        }
+        // app.ask(recipes[state.currRecipe].instructions[state.currInstruction].instruction);
     }
 
     function selectRecipe(app) {
@@ -383,8 +438,8 @@ exports.chefAI = functions.https.onRequest((request, response) => {
             }
             if (exists) {
                 // CHECK INGREDIENT!
-                checkIngredients(app);
-                // startInstruction(app);
+                // checkIngredients(app);
+                startInstruction(app);
             } else {
                 app.setContext(CONTEXT_SELECTING_RECIPE);
                 let msg = "That recipe doesn't exist at the moment. Here are some of your favorite recipes: ";
@@ -402,7 +457,7 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     function startInstruction(app) {
         state.currInstruction = 0;
         app.setContext(CONTEXT_INSTRUCTING_RECIPE);
-        app.ask("Okay first step is " + recipes[state.currRecipe].instructions[state.currInstruction].instruction);
+        app.ask("Okay, " + recipes[state.currRecipe].instructions[state.currInstruction].instruction);
     }
 
     function getIngredientFormat(ingredient) {
@@ -415,6 +470,7 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     }
 
     function getIngredient(app) {
+        checkRecipe();
         let ingredient = app.getArgument("ingredient");
         let ingredients = recipes[state.currRecipe].ingredients;
 
@@ -474,9 +530,19 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     //     checkIngredients(app);
     // }
 
-    function listRecipes() {
+    function listRecipes(app) {
+        let msg = "Here are some recipes you can cook: ";
+        for (var i = recipes.length - 1; i >= 0; i--) {
+            msg += recipes[i].name;
+            if (i > 0) {
+                msg += ", ";
+            }
+        }
+        app.ask(msg);
+    }
+
+    function listFavoriteRecipes(app) {
         let msg = "Here are some of your favorite recipes: ";
-        app.setContext(CONTEXT_SELECTING_RECIPE);
         for (var i = recipes.length - 1; i >= 0; i--) {
             msg += recipes[i].name;
             if (i > 0) {
@@ -513,6 +579,7 @@ exports.chefAI = functions.https.onRequest((request, response) => {
         app.ask(prompt);
     }
 
+// chris wuz heer// rene too
     function getRandomPrompt (app, array) {
         let lastPrompt = app.data.lastPrompt;
         let prompt;
@@ -527,6 +594,83 @@ exports.chefAI = functions.https.onRequest((request, response) => {
             prompt = array[Math.floor(Math.random() * (array.length))];
         }
         return prompt;
+    }
+
+    function  viewShoppingList(app) {
+        // console.log(app);
+        let msg = "You have ";
+        for (var i = state.shoppingList.length - 1; i >= 0; i--) {
+            msg += state.shoppingList[i];
+            if (i === 1 && state.shoppingList.length > 1) {
+                msg += ", and ";
+            } else if (i > 0) {
+                msg += ", ";
+            }
+        }
+        msg += " on your list. Do you want to order them now?";
+        app.setContext(CONTEST_VIEWING_SHOPPING_LIST);
+        app.ask(msg);
+    }
+
+    function viewFridge(app) {
+        let msg = "These are the items in your fridge: ";
+        for (var i = state.fridgeInventory.length - 1; i >= 0; i--) {
+            msg += state.fridgeInventory[i].name;
+            if (i === 1 && state.fridgeInventory.length > 1) {
+                msg += ", and ";
+            } else if (i > 0) {
+                msg += ", ";
+            }
+        }
+        // app.setContext(CONTEST_VIEWING_SHOPPING_LIST);
+        app.ask(msg);
+    }
+
+    function addToShoppingList(app) {
+        let item = app.getArgument("item");
+        if (state.shoppingList.indexOf(item) === -1) {
+            state.shoppingList.push(item);
+            app.ask("Okay, " + item + " was added to your shopping list.");
+            return;
+        }
+        app.ask(item + " is already on your list.");
+    }
+
+    function broadAddToShoppingList(app) {
+        let item = app.result.contexts.parameters["item"];
+
+        if (state.shoppingList.indexOf(item) === -1) {
+            state.shoppingList.push(item);
+            app.ask("Okay, " + item + " was added to your shopping list.");
+            return;
+        }
+        app.ask(item + " is already on your list.");
+    }
+
+    function inShoppingList(app) {
+        let item = app.getArgument("item");
+
+        for (var i = state.shoppingList.length - 1; i >= 0; i--) {
+            if (state.shoppingList[i].indexOf(item) >= 0) {
+                app.ask("Yes, " + item + " is in your shopping list.");
+                return;
+            }
+        }
+        app.ask("No, " + item + " is not in your shopping list.");
+    }
+
+    function validRecipes(app) {
+
+    }
+
+    function checkCompletedRecipe(app) {
+        app.ask(getRandomPrompt(app,
+        [   "Well, good for you. Do you want a cookie?",
+            "Oh hey what's up? What recipe do you have in mind?",
+            "I'm Marvin, I am here to help you cook, what do you have in mind?",
+            "Hello, my name is Marvin! I am your personal chef! what do you want to cook?",
+            "Oh hey, it's tiny chef! Wanna cook up a meal, human?"
+        ]));
     }
 
     function testAudio(app) {
@@ -545,6 +689,23 @@ exports.chefAI = functions.https.onRequest((request, response) => {
             ]));
     }
 
+    function describeRecipe(app) {
+        let food = app.getArgument("food");
+        let exists = false;
+
+        for (var i = recipes.length - 1; i >= 0; i--) {
+            if (recipes[i].name.toLowerCase().indexOf(food.toLowerCase()) >= 0) {
+                exists = true;
+                break ;
+            }
+        }
+        if (exists) {
+            app.ask(recipes[i].description);
+        } else {
+            app.ask("That recipe doesn't exist.");
+        }
+    }
+
     let actionMap = new Map();
     actionMap.set(NAME_ACTION, makeName);
     actionMap.set(INTENT_START_INSTRUCTION, startInstruction);
@@ -556,14 +717,27 @@ exports.chefAI = functions.https.onRequest((request, response) => {
     actionMap.set(ACTION_GET_IMAGE, getImage);
     actionMap.set(ACTION_SUGGEST_RECIPE, suggestRecipe);
     actionMap.set(ACTION_SUGGESTION_FOLLOWUP_NO, listRecipes);
-    actionMap.set(ACTION_SUGGESTION_FOLLOWUP_YES, checkIngredients);
+    actionMap.set(ACTION_SUGGESTION_FOLLOWUP_YES, startInstruction);
     actionMap.set(ACTION_SUGGESTION_FOLLOWUP_FOOD, selectRecipe);
     actionMap.set(ACTION_SELECT_RECIPE, selectRecipe);
+    actionMap.set(ACTION_VIEW_RECIPES, listRecipes);
+    actionMap.set(ACTION_VIEW_FRIDGE, viewFridge);
+    actionMap.set(ACTION_VIEW_FAVORITE_RECIPES, listRecipes);
+    actionMap.set(ACTION_CHECK_INGREDIENTS, checkIngredients);
+    actionMap.set(ACTION_COMPLETE_INSTRUCTION, checkCompletedRecipe);
+
+    actionMap.set(ACTION_ADD_TO_SHOPPING_LIST, addToShoppingList);
+    actionMap.set(ACTION_IS_IN_SHOPPING_LIST, inShoppingList);
+
     // actionMap.set("entry_point", initialize);
-    actionMap.set('ingredients.check-followup-yes', startInstruction);
+    // actionMap.set('ingredients.check-followup-yes', startInstruction);
+    actionMap.set(ACTION_ALL_INGREDIENTS_CONFIRMED, startInstruction);
     actionMap.set('test', test);
     actionMap.set('testAudio', testAudio);
-
+    actionMap.set('test.hello-world', listRecipes);
+    actionMap.set(ACTION_VIEW_SHOPPING_LIST, viewShoppingList);
+    actionMap.set(ACTION_BROAD_ADD_TO_SHOPPING_LIST, broadAddToShoppingList);
+    actionMap.set(ACTION_DESCRIBE_RECIPE, describeRecipe);
     app.handleRequest(actionMap);
 });
 // [END ChefAI]

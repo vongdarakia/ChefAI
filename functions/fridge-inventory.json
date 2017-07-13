@@ -1,0 +1,112 @@
+[
+  {
+    "name" : "russet potatoes",
+    "weight_unit" : "lbs",
+    "weight_qty" : 3,
+    "unit" : null,
+    "unit_qty" : 8
+  },
+  {
+    "name" : "salt",
+    "unit" : "tsp",
+    "unit_qty" : 1
+  },
+  {
+    "name" : "butter",
+    "unit" : "tbsp",
+    "unit_qty" : 2
+  },
+  {
+    "name" : "pepper",
+    "unit" : "to taste",
+    "unit_qty" : 1
+  },
+  {
+    "name" : "hot milk",
+    "unit" : "cup",
+    "unit_qty" : 0.25
+  },
+  {
+    "name" : "white sugar",
+    "unit" : "cup",
+    "unit_qty" : 1
+  },
+  {
+    "name" : "eggs",
+    "unit" : null,
+    "unit_qty" : 3
+  },
+  {
+    "name" : "sweetened condensed milk",
+    "weight_unit" : "oz",
+    "weight_qty" : "14",
+    "unit" : "can",
+    "unit_qty" : 1
+  },
+  {
+    "name" : "evaporated milk",
+    "weight_unit" : "fl oz",
+    "weight_qty" : "12",
+    "unit" : "can",
+    "unit_qty" : 1
+  },
+  {
+    "name" : "vanilla extract",
+    "unit" : "tbsp",
+    "unit_qty" : 1
+  },
+  {
+    "name" : "small spaghetti squash",
+    "weight_unit" : "lbs",
+    "weight_qty" : 2,
+    "unit" : null,
+    "unit_qty" : 1
+  },
+  {
+    "name" : "extra-virgin olive oil",
+    "unit" : "tbsp",
+    "unit_qty" : 3
+  },
+  {
+    "name" : "kosher salt",
+    "unit" : "to taste",
+    "unit_qty" : 1
+  },
+  {
+    "name" : "freshly ground pepper",
+    "unit" : "to taste",
+    "unit_qty" : 1
+  },
+  {
+    "name" : "hot Italian sausage links",
+    "weight_unit" : "lbs",
+    "weight_qty" : 1.5,
+    "unit" : "links",
+    "unit_qty" : 8
+  },
+  {
+    "name" : "red bell pepper",
+    "unit" : null,
+    "unit_qty" : 1
+  },
+  {
+    "name" : "medium onion",
+    "unit" : null,
+    "unit_qty" : 1
+  },
+  {
+    "name" : "garlic",
+    "unit" : "clove",
+    "unit_qty" : 1
+  },
+  {
+    "name" : "fresh parsley",
+    "unit" : "cup",
+    "unit_qty" : 0.25
+  },
+  {
+    "name" : "freshly grated parmesan",
+    "unit" : "topping",
+    "unit_qty" : 1
+  }
+]
